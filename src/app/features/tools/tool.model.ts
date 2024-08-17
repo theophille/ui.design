@@ -1,4 +1,5 @@
 export interface Tool {
   icon: string,
-  name: string
+  label: string,
+  tool: string
 }

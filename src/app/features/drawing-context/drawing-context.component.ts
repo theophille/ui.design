@@ -1,15 +1,23 @@
-import { AfterViewInit, Component, ElementRef, HostListener, inject, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, HostListener, inject, OnInit, ViewChild, WritableSignal } from '@angular/core';
 import { SizesService } from '../../shared/services/sizes.service';
-import { Vec2 } from '../../shared/utils/math.utils';
 import { ZoomAndPanDirective } from './zoom-and-pan.directive';
 import { ZoomAndPanService } from './zoom-and-pan.service';
 import { PagesBoxService } from '../pages-box/pages-box.service';
 import { UIPage } from '../pages-box/page.model';
+import { Rectangle } from '../../engine/drawables/rectangle';
+import { Line } from '../../engine/drawables/line';
+import { Ellipse } from '../../engine/drawables/ellipse';
+import { Polygon } from '../../engine/drawables/polygon';
+import { CustomShape } from '../../engine/drawables/customShape';
+import { Layers, LayersService } from '../layers/layers.service';
+import { Shape } from '../../engine/drawables/shape';
+import { DesignModeDirective } from './design-mode.directive';
+import { Drawable } from '../../engine/drawables/drawable';
 
 @Component({
   selector: 'uid-drawing-context',
   standalone: true,
-  imports: [ZoomAndPanDirective],
+  imports: [ZoomAndPanDirective, DesignModeDirective],
   templateUrl: './drawing-context.component.html',
   styleUrl: './drawing-context.component.scss'
 })
@@ -18,13 +26,16 @@ export class DrawingContextComponent implements OnInit, AfterViewInit {
   
   private context!: CanvasRenderingContext2D | null;
   private pageData!: UIPage;
+  private layers!: WritableSignal<Layers>;
 
   private zoomAndPanService = inject(ZoomAndPanService);
   private sizesService = inject(SizesService);
   private pagesService = inject(PagesBoxService);
+  private layersService = inject(LayersService);
 
   ngOnInit(): void {
     this.pageData = this.pagesService.selectedPageData;
+    this.layers = this.layersService.layers;
 
     this.zoomAndPanService.viewChanged.subscribe(() => {
       this.draw();
@@ -51,14 +62,28 @@ export class DrawingContextComponent implements OnInit, AfterViewInit {
     this.context = this.canvas.nativeElement.getContext('2d');
   }
 
+  private renderLayers(): void {
+    const layers = this.layers();
+
+    for (let i = layers.length - 1; i >= 0; i--) {
+      if (layers[i] instanceof Drawable) {
+        (layers[i] as Drawable).draw(this.context as CanvasRenderingContext2D);
+      }
+    }
+  }
+
   private draw(): void {
     const t = this.zoomAndPanService.getViewTransform();
     this.context?.save();
     this.clear();
     this.context?.translate(t.offset.x, t.offset.y);
     this.context?.scale(t.scale, t.scale);
+
     this.context!.fillStyle = 'white';
     this.context!.fillRect(0, 0, this.pageData.width, this.pageData.height);
+
+    this.renderLayers();
+
     this.context?.restore();
   }
   
@@ -91,5 +116,6 @@ export class DrawingContextComponent implements OnInit, AfterViewInit {
   @HostListener('window:resize')
   onResize(): void {
     this.setCanvasSize();
+    this.draw();
   }
 }

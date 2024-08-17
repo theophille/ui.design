@@ -15,7 +15,6 @@ export class PagesBoxService {
   public pageChanged = new Subject<UIPage>();
 
   constructor() {
-    console.log('hei');
     const headers = new HttpHeaders({'Content-Type': 'application/json'});
     this.http.get('http://localhost:5000/dev-project', {headers: headers}).subscribe(
       (value: any) => {

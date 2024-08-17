@@ -14,6 +14,7 @@ export class ZoomAndPanDirective {
   constructor(private el: ElementRef<HTMLCanvasElement>) { 
     this.canvas = el.nativeElement;
     this.context = el.nativeElement.getContext('2d');
+    // console.log([].constructor.name);
   }
 
   @HostListener('mousedown', ['$event']) 
