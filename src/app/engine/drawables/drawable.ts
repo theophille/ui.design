@@ -1,4 +1,7 @@
 export abstract class Drawable {
+  static CustomShape(CustomShape: any, arg1: { points: import("./customShape").PenPoint[]; }): Drawable {
+    throw new Error('Method not implemented.');
+  }
   x: number = 0;
   y: number = 0;
   width: number = 0;
