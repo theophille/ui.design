@@ -3,6 +3,6 @@
   [actions]="false"
   [height]="height">
   @for (layerData of layersListData; track $index) {
-    <uid-box-list-item [icon]="layerData.icon" [label]="layerData.label" [actions]="true" [active]="selectedLayer() === $index"></uid-box-list-item>
+    <uid-box-list-item [icon]="layerData.icon" [label]="layerData.label" [actions]="true" [active]="selectedLayers().includes($index)" (click)="onClick($index)"></uid-box-list-item>
   }
 </uid-ui-box>

@@ -6,6 +6,8 @@ import { BoxListItemComponent } from '../../shared/components/ui-box/box-list-it
 import { Icons, TOOL_ICONS } from '../../engine/constants/constants';
 import { Drawable } from '../../engine/drawables/drawable';
 import { Polygon } from '../../engine/drawables/polygon';
+import { KeyboardService } from '../../core/services/keyboard.service';
+import { KEYS } from '../../core/constants/constants';
 
 @Component({
   selector: 'uid-layers',
@@ -18,12 +20,14 @@ export class LayersComponent implements OnInit {
   @Input() height: number = 50;
   layers!: WritableSignal<Layers>;
   layersListData: any[] = [];
-  selectedLayer: WritableSignal<number> = signal(-1);
+  selectedLayers!: WritableSignal<Array<number>>;
   
   private layersService = inject(LayersService);
+  private keyboardService = inject(KeyboardService);
 
   ngOnInit(): void {
     this.layers = this.layersService.layers;
+    this.selectedLayers = this.layersService.selectedLayers;
 
     this.layersService.layersLoaded.subscribe(() => {
       const layers = this.layers();
@@ -41,15 +45,29 @@ export class LayersComponent implements OnInit {
     });
 
     this.layersService.layerClicked.subscribe((layerIndex: number | null) => {
-      if (layerIndex !== null) {
-        this.selectedLayer.set(layerIndex);
-      } else {
-        this.selectedLayer.set(-1);
-      }
+      this.handleSelection(layerIndex, KEYS.shift);
     });
 
     this.layersService.layersLoaded.next();
   }
 
+  public onClick(layerIndex: number): void {
+    this.handleSelection(layerIndex, KEYS.control);
+  }
   
+  private handleSelection(layerIndex: number | null, key: string) {
+    const selectedLayers = this.selectedLayers();
+    
+    if (this.keyboardService.isPressed(key)) {
+      const indexInSelected = selectedLayers.indexOf(layerIndex as number);
+    
+      if (indexInSelected >= 0) {
+        selectedLayers.splice(indexInSelected, 1);
+      } else {
+        selectedLayers.push(layerIndex as number);
+      }
+    } else {
+      this.selectedLayers.set(layerIndex !== null ? [layerIndex] : []);
+    }
+  }
 }

@@ -3,7 +3,6 @@ import { Subject } from 'rxjs';
 import { Drawable } from '../../engine/drawables/drawable';
 import { DrawableFactory } from '../../engine/drawables/drawableFactory';
 import { DRAWABLES } from '../../engine/constants/constants';
-import { PenPoint } from '../../engine/drawables/customShape';
 
 export type Layers = Array<Drawable | Array<Drawable>>;
 
@@ -20,7 +19,7 @@ export class LayersService {
     (DrawableFactory.createFromBox(DRAWABLES.Rectangle, 100, 100, 200, 200) as Drawable),
     (DrawableFactory.createFromData(DRAWABLES.Polygon, {
       x: 500, y: 500,
-      width: 300, height: 300,
+      width: 100, height: 700,
       rotation: 50, pointsCount: 6
     }) as Drawable),
     (DrawableFactory.createFromData(DRAWABLES.Line, {
@@ -36,6 +35,27 @@ export class LayersService {
 
   layersLoaded = new Subject<void>();
   layerClicked = new Subject<number | null>();
+  selectedLayers: WritableSignal<Array<number>> = signal([]);
+
+  private _selection: Array<number> = [];
+
+  public get selection(): Array<number> {
+    return this._selection;
+  }
+
+  public addToSelection(index: number): void {
+    this._selection.push(index);
+  }
+
+  public removeFromSelection(index: number): void {
+    if (this.layers().length >= 1) {
+      this._selection.splice(index, 1);
+    }
+  }
+
+  public clearSelection(): void {
+    this._selection = []
+  }
 
   constructor() {
     

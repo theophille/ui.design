@@ -78,6 +78,27 @@ export class Transform {
     };
   }
 
+  public static applyTransform(p: Vec2, x: number, y: number, w: number, h: number, r: number): Vec2;
+  public static applyTransform(p: PenPoint, x: number, y: number, w: number, h: number, r: number): PenPoint;
+  public static applyTransform(p: Array<Vec2>, x: number, y: number, w: number, h: number, r: number): Array<Vec2>;
+  public static applyTransform(p: Array<PenPoint>, x: number, y: number, w: number, h: number, r: number): Array<PenPoint>;
+  public static applyTransform(p: any, x: number, y: number, w: number, h: number, r: number): Vec2 | PenPoint | Array<Vec2> | Array<PenPoint> {
+    const applyToPoint = (p: any, x: number, y: number, w: number, h: number, r: number) => {
+      return Transform.translate(
+        Transform.rotate(
+          Transform.scale(
+            p, w, h
+          ), r
+        ), x, y
+      );
+    };
+
+    if (p instanceof Array) {
+      return p.map((pt) => applyToPoint(pt, x, y, w, h, r));
+    }
+
+    return applyToPoint(p, x, y, w, h, r);
+  }
 }
 
 export function radians(deg: number): number {

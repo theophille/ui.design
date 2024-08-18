@@ -3,10 +3,12 @@ import { Shape } from "./shape";
 
 export class Polygon extends Shape {
   pointsCount: number = 3;
+  points: Array<Vec2> = [];
 
   constructor(params: Partial<Polygon>) {
     super();
     Object.assign(this, params);
+    this.points = this.generatePoints();
   }
 
   private generatePoints(): Array<Vec2> {
@@ -18,10 +20,6 @@ export class Polygon extends Shape {
         x: -Math.sin(radians(i * angle)) / 2,
         y: -Math.cos(radians(i * angle)) / 2
       };
-
-      point = Transform.scale(point, this.width, this.height);
-      point = Transform.rotate(point, this.rotation);
-      point = Transform.translate(point, this.x, this.y);
 
       points.push(point);
     }
@@ -37,11 +35,11 @@ export class Polygon extends Shape {
 
     this.path = new Path2D();
 
-    const unitPoints = this.generatePoints();
-    this.path.moveTo(unitPoints[0].x, unitPoints[0].y);
+    const points = Transform.applyTransform(this.points, this.x, this.y, this.width, this.height, this.rotation);
+    this.path.moveTo(points[0].x, points[0].y);
     
-    for (let i = 1; i < unitPoints.length; i++) {
-      const current = unitPoints[i];
+    for (let i = 1; i < points.length; i++) {
+      const current = points[i];
       this.path.lineTo(current.x, current.y);
     }
 

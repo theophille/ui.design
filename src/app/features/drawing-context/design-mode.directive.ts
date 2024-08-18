@@ -3,6 +3,8 @@ import { ZoomAndPanService } from './zoom-and-pan.service';
 import { LayersService } from '../layers/layers.service';
 import { Vec2 } from '../../engine/utils/math.utils';
 import { Drawable } from '../../engine/drawables/drawable';
+import { KeyboardService } from '../../core/services/keyboard.service';
+import { KEYS } from '../../core/constants/constants';
 
 @Directive({
   selector: '[uidDesignMode]',
@@ -14,6 +16,7 @@ export class DesignModeDirective {
   private context!: CanvasRenderingContext2D | null;
   private zoomAndPanService = inject(ZoomAndPanService);
   private layersService = inject(LayersService);
+  private keyboardService = inject(KeyboardService);
 
   constructor(private el: ElementRef<HTMLCanvasElement>) { 
     this.canvas = el.nativeElement;
@@ -48,7 +51,7 @@ export class DesignModeDirective {
         }
       }
 
-      if (!isDrawable) {
+      if (!isDrawable && !this.keyboardService.isPressed(KEYS.shift)) {
         this.layersService.layerClicked.next(null);
       }
 
@@ -57,5 +60,4 @@ export class DesignModeDirective {
       }
     }
   }
-
 }

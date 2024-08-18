@@ -1,8 +1,9 @@
-import { AfterViewInit, Component, ElementRef, HostListener, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, HostListener, inject, ViewChild } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { DesignSpaceComponent } from './workspace/design-space/design-space.component';
-import { NavbarComponent } from './core/navbar/navbar.component';
+import { NavbarComponent } from './core/components/navbar/navbar.component';
 import { SizesService } from './shared/services/sizes.service';
+import { KeyboardService } from './core/services/keyboard.service';
 
 @Component({
   selector: 'app-root',
@@ -15,6 +16,7 @@ export class AppComponent implements AfterViewInit {
   @ViewChild(NavbarComponent) navComponent!: NavbarComponent;
   @ViewChild('content') contentElement!: ElementRef;
   title = 'ui.design';
+  keyboardService = inject(KeyboardService);
 
   constructor(private sizesService: SizesService) {}
 
@@ -22,9 +24,21 @@ export class AppComponent implements AfterViewInit {
     this.setContentHeight();
   }
 
-  @HostListener('window:resize', ['$event'])
-  onResize(event:Event): void {
+  @HostListener('window:resize')
+  onResize(): void {
     this.setContentHeight();
+  }
+
+  @HostListener('window:keydown', ['$event'])
+  onKeyDown(event: KeyboardEvent): void {
+    if (!this.keyboardService.keysPressed.includes(event.key)) {
+      this.keyboardService.addKey(event.key);
+    }
+  }
+
+  @HostListener('window:keyup', ['$event'])
+  onKeyUp(event: KeyboardEvent): void {
+    this.keyboardService.removeKey(event.key);
   }
 
   setContentHeight(): void {

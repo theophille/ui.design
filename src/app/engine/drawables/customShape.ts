@@ -49,18 +49,14 @@ export class CustomShape extends Shape {
       this.points[i] = Transform.rotate(this.points[i], this.rotation);
     }
 
-    console.log(this.points);
-
     this.path = new Path2D();
     
     const start = this.points[0];
     this.path.moveTo(start.center.x, start.center.y);
 
-    for (let i = 1; i <= this.points.length; i++) {
+    for (let i = 1; i < this.points.length; i++) {
       const prev = this.points[i - 1];
-      const current =
-        i === this.points.length ?
-          this.points[0] : this.points[i];
+      const current = this.points[i];
 
       if (!prev.hasRight() && !current.hasLeft()) {
         this.path.lineTo(
@@ -96,5 +92,9 @@ export class CustomShape extends Shape {
     context.fill(this.path);
     context.stroke(this.path);
     context.restore();
+  }
+
+  public closePath() {
+    this.path.closePath();
   }
 }
