@@ -1,6 +1,6 @@
 import { Component, inject, Input, OnInit, signal, WritableSignal } from '@angular/core';
 import { UiBoxComponent } from '../../shared/components/ui-box/ui-box.component';
-import { Layers, LayersService } from './layers.service';
+import { Layers, LayersService } from '../../shared/services/layers.service';
 import { Shape } from '../../engine/drawables/shape';
 import { BoxListItemComponent } from '../../shared/components/ui-box/box-list-item/box-list-item.component';
 import { Icons, TOOL_ICONS } from '../../engine/constants/constants';
@@ -66,8 +66,13 @@ export class LayersComponent implements OnInit {
       } else {
         selectedLayers.push(layerIndex as number);
       }
-    } else {
-      this.selectedLayers.set(layerIndex !== null ? [layerIndex] : []);
+    } else if (layerIndex !== null && !selectedLayers.includes(layerIndex)) {
+      this.selectedLayers.set([layerIndex]);
+    } else if (layerIndex === null) {
+      this.selectedLayers.set([]);
     }
+
+    this.layersService.setTransformBox();
+    this.layersService.requestRedraw.next();
   }
 }

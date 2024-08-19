@@ -22,8 +22,6 @@ export class PenPoint {
 }
 
 export class CustomShape extends Shape {
-  points: Array<PenPoint> = [];
-
   constructor(params: Partial<CustomShape>) {
     super();
     Object.assign(this, params);

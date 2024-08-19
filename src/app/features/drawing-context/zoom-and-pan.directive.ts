@@ -1,4 +1,4 @@
-import { Directive, ElementRef, HostListener, inject, OnInit } from '@angular/core';
+import { Directive, ElementRef, HostListener, inject } from '@angular/core';
 import { ZoomAndPanService } from './zoom-and-pan.service';
 
 @Directive({
@@ -29,8 +29,8 @@ export class ZoomAndPanDirective {
     this.zoomAndPanService.pan(event.offsetX, event.offsetY);
   }
 
-  @HostListener('mouseup', ['$event'])
-  onMouseUp(event: MouseEvent) {
+  @HostListener('mouseup')
+  onMouseUp() {
     this.zoomAndPanService.panEnd();
   }
 

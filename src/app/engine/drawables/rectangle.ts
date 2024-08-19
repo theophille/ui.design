@@ -7,6 +7,7 @@ export class Rectangle extends Shape {
   constructor(params: Partial<Rectangle>) {
     super();
     Object.assign(this, params);
+    this.boundingBox = this.getBoundingBoxCoords();
   }
 
   private generatePoints(): Array<Vec2> {

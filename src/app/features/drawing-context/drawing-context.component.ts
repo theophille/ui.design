@@ -4,13 +4,7 @@ import { ZoomAndPanDirective } from './zoom-and-pan.directive';
 import { ZoomAndPanService } from './zoom-and-pan.service';
 import { PagesBoxService } from '../pages-box/pages-box.service';
 import { UIPage } from '../pages-box/page.model';
-import { Rectangle } from '../../engine/drawables/rectangle';
-import { Line } from '../../engine/drawables/line';
-import { Ellipse } from '../../engine/drawables/ellipse';
-import { Polygon } from '../../engine/drawables/polygon';
-import { CustomShape } from '../../engine/drawables/customShape';
-import { Layers, LayersService } from '../layers/layers.service';
-import { Shape } from '../../engine/drawables/shape';
+import { Layers, LayersService } from '../../shared/services/layers.service';
 import { DesignModeDirective } from './design-mode.directive';
 import { Drawable } from '../../engine/drawables/drawable';
 
@@ -34,6 +28,7 @@ export class DrawingContextComponent implements OnInit, AfterViewInit {
   private layersService = inject(LayersService);
 
   ngOnInit(): void {
+    this.context?.save();
     this.pageData = this.pagesService.selectedPageData;
     this.layers = this.layersService.layers;
 
@@ -53,6 +48,10 @@ export class DrawingContextComponent implements OnInit, AfterViewInit {
 
       this.zoomAndPanService.setScale(scale);
 
+      this.draw();
+    });
+
+    this.layersService.requestRedraw.subscribe(() => {
       this.draw();
     });
   }
@@ -83,6 +82,11 @@ export class DrawingContextComponent implements OnInit, AfterViewInit {
     this.context!.fillRect(0, 0, this.pageData.width, this.pageData.height);
 
     this.renderLayers();
+    const box = this.layersService.transformBox;
+
+    if (box) {
+      box.draw(this.context as CanvasRenderingContext2D, this.zoomAndPanService.getOffset(), this.zoomAndPanService.getScale());
+    }
 
     this.context?.restore();
   }

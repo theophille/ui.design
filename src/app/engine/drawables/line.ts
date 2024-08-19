@@ -1,5 +1,6 @@
 import { BORDER_DEFAULT, FILL_DEFAULT, STROKE_SIZE_DEFAULT } from "../constants/constants";
-import { Drawable } from "./drawable";
+import { Transform } from "../utils/math.utils";
+import { BoundingBox, Drawable } from "./drawable";
 
 export class Line extends Drawable {
   color: string = BORDER_DEFAULT;
@@ -8,6 +9,8 @@ export class Line extends Drawable {
   constructor(params: Partial<Line>) {
     super();
     Object.assign(this, params);
+    this.anchor = { x: 0, y: 0 };
+    this.boundingBox = this.getBoundingBoxCoords();
   }
 
   public override draw(context: CanvasRenderingContext2D): void {

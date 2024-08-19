@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Vec2 } from '../../engine/utils/math.utils';
-import { BehaviorSubject, Subject } from 'rxjs';
+import { Subject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -67,6 +67,10 @@ export class ZoomAndPanService {
 
   setOffset(offset: Vec2): void {
     this.offset = offset;
+  }
+
+  getOffset(): Vec2 {
+    return this.offset;
   }
 
   setScale(scale: number): void {

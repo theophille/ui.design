@@ -4,6 +4,7 @@ export class Ellipse extends Shape {
   constructor(params: Partial<Ellipse>) {
     super();
     Object.assign(this, params);
+    this.boundingBox = this.getBoundingBoxCoords();
   }
   
   public override draw(context: CanvasRenderingContext2D): void {

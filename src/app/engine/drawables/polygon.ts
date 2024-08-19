@@ -1,14 +1,15 @@
 import { radians, Transform, Vec2 } from "../utils/math.utils";
+import { BoundingBox, Drawable } from "./drawable";
 import { Shape } from "./shape";
 
 export class Polygon extends Shape {
   pointsCount: number = 3;
-  points: Array<Vec2> = [];
 
   constructor(params: Partial<Polygon>) {
     super();
     Object.assign(this, params);
     this.points = this.generatePoints();
+    this.boundingBox = this.getBoundingBoxCoords();
   }
 
   private generatePoints(): Array<Vec2> {
@@ -35,7 +36,7 @@ export class Polygon extends Shape {
 
     this.path = new Path2D();
 
-    const points = Transform.applyTransform(this.points, this.x, this.y, this.width, this.height, this.rotation);
+    const points = Transform.applyTransform(this.points as Array<Vec2>, this.x, this.y, this.width, this.height, this.rotation);
     this.path.moveTo(points[0].x, points[0].y);
     
     for (let i = 1; i < points.length; i++) {

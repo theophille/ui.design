@@ -1,8 +1,9 @@
 import { Injectable, signal, WritableSignal } from '@angular/core';
 import { Subject } from 'rxjs';
-import { Drawable } from '../../engine/drawables/drawable';
+import { BoundingBox, Drawable } from '../../engine/drawables/drawable';
 import { DrawableFactory } from '../../engine/drawables/drawableFactory';
 import { DRAWABLES } from '../../engine/constants/constants';
+import { TransformBox } from '../../engine/drawables/transformBox';
 
 export type Layers = Array<Drawable | Array<Drawable>>;
 
@@ -10,7 +11,7 @@ export type Layers = Array<Drawable | Array<Drawable>>;
   providedIn: 'root'
 })
 export class LayersService {
-  layers: WritableSignal<Layers> = signal([
+  layers: WritableSignal<Array<Drawable>> = signal([
     (DrawableFactory.createFromData(DRAWABLES.Rectangle, {
       x: 1000, y: 300,
       width: 10, height: 10,
@@ -36,28 +37,46 @@ export class LayersService {
   layersLoaded = new Subject<void>();
   layerClicked = new Subject<number | null>();
   selectedLayers: WritableSignal<Array<number>> = signal([]);
+  requestRedraw = new Subject<void>();
+  transformBox: TransformBox | null = null;
 
-  private _selection: Array<number> = [];
+  setTransformBox(): void {
+    const selectedLayers = this.selectedLayers();
+    const layers = this.layers();
 
-  public get selection(): Array<number> {
-    return this._selection;
-  }
-
-  public addToSelection(index: number): void {
-    this._selection.push(index);
-  }
-
-  public removeFromSelection(index: number): void {
-    if (this.layers().length >= 1) {
-      this._selection.splice(index, 1);
+    if (selectedLayers.length === 0) {
+      this.transformBox = null;
+      return;
     }
-  }
-
-  public clearSelection(): void {
-    this._selection = []
-  }
-
-  constructor() {
     
+    let boundingBox: BoundingBox = {
+      minX: Infinity,
+      minY: Infinity,
+      maxX: -Infinity,
+      maxY: -Infinity
+    }
+
+    for (let i = 0; i < selectedLayers.length; i++) {
+      const drawable: Drawable = layers[selectedLayers[i]];
+      const dbb = drawable.boundingBox;
+
+      if (boundingBox.minX > dbb.minX) {
+        boundingBox.minX = dbb.minX;
+      }
+
+      if (boundingBox.minY > dbb.minY) {
+        boundingBox.minY = dbb.minY;
+      }
+
+      if (boundingBox.maxX < dbb.maxX) {
+        boundingBox.maxX = dbb.maxX;
+      }
+
+      if (boundingBox.maxY < dbb.maxY) {
+        boundingBox.maxY = dbb.maxY;
+      }
+    }
+
+    this.transformBox = new TransformBox(boundingBox);
   }
 }
