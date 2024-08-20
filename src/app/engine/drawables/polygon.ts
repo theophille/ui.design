@@ -10,6 +10,7 @@ export class Polygon extends Shape {
     Object.assign(this, params);
     this.points = this.generatePoints();
     this.boundingBox = this.getBoundingBoxCoords();
+    console.log(this.points);
   }
 
   private generatePoints(): Array<Vec2> {
@@ -36,7 +37,8 @@ export class Polygon extends Shape {
 
     this.path = new Path2D();
 
-    const points = Transform.applyTransform(this.points as Array<Vec2>, this.x, this.y, this.width, this.height, this.rotation);
+    const points = Transform.applyTransformAround(this.points as Array<Vec2>, this.x, this.y, this.width, this.height, this.rotation, {x: 0, y: 0});
+    console.log(this);
     this.path.moveTo(points[0].x, points[0].y);
     
     for (let i = 1; i < points.length; i++) {

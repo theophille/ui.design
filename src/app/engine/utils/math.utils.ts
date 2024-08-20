@@ -25,8 +25,8 @@ export class Transform {
     }
 
     return {
-      x: Math.round(p.x * Math.cos(radians(deg)) - p.y * Math.sin(radians(deg))),
-      y: Math.round(p.x * Math.sin(radians(deg)) + p.y * Math.cos(radians(deg)))
+      x: p.x * Math.cos(radians(deg)) - p.y * Math.sin(radians(deg)),
+      y: p.x * Math.sin(radians(deg)) + p.y * Math.cos(radians(deg))
     };
   }
   
@@ -49,8 +49,8 @@ export class Transform {
     }
 
     return {
-      x: Math.round(x + p.x),
-      y: Math.round(y + p.y)
+      x: x + p.x,
+      y: y + p.y
     };
   }
 
@@ -73,8 +73,8 @@ export class Transform {
     }
     
     return {
-      x: Math.round(sx * p.x),
-      y: Math.round(sy * p.y)
+      x: sx * p.x,
+      y: sy * p.y
     };
   }
 
@@ -98,6 +98,35 @@ export class Transform {
     }
 
     return applyToPoint(p, x, y, w, h, r);
+  }
+
+  public static rotateAround(p: Array<Vec2>, pivot: Vec2, deg: number): Array<Vec2> {
+    const rotateOnePoint = (p: Vec2, pivot: Vec2, deg: number): Vec2 => {
+      let rp = p;
+      rp = Transform.translate(p, -pivot.x, -pivot.y);
+      rp = Transform.rotate(rp, deg);
+      rp = Transform.translate(rp, pivot.x, pivot.y);
+      return rp;
+    };
+    return p.map((x) => rotateOnePoint(x, pivot, deg));
+  }
+
+  public static scaleAround(p: Array<Vec2>, pivot: Vec2, sx: number, sy: number): Array<Vec2> {
+    const scaleOnePoint = (p: Vec2, pivot: Vec2, sx: number, sy: number): Vec2 => {
+      let rp = p;
+      rp = Transform.translate(p, -pivot.x, -pivot.y);
+      rp = Transform.scale(rp, sx, sy);
+      rp = Transform.translate(rp, pivot.x, pivot.y);
+      return rp;
+    };
+
+    return p.map((x) => scaleOnePoint(x, pivot, sx, sy));
+  }
+
+  public static applyTransformAround(p: Array<Vec2>, x: number, y: number, w: number, h: number, r: number, pivot: Vec2): Array<Vec2> {
+    let tp = Transform.scaleAround(p, pivot, w, h);
+    tp = Transform.rotateAround(tp, pivot, r);
+    return tp.map((pt) => this.translate(pt, x - pivot.x, y - pivot.y));
   }
 }
 

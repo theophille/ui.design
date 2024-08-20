@@ -9,7 +9,7 @@ export class Line extends Drawable {
   constructor(params: Partial<Line>) {
     super();
     Object.assign(this, params);
-    this.anchor = { x: 0, y: 0 };
+    this.anchor = { x: -this.width / 2, y: -this.height / 2 };
     this.boundingBox = this.getBoundingBoxCoords();
   }
 

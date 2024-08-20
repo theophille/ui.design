@@ -7,6 +7,7 @@ export class Rectangle extends Shape {
   constructor(params: Partial<Rectangle>) {
     super();
     Object.assign(this, params);
+    this.points = this.generatePoints();
     this.boundingBox = this.getBoundingBoxCoords();
   }
 
@@ -37,11 +38,6 @@ export class Rectangle extends Shape {
       { x: Math.round(-mw), y: Math.round(-mh + blr) }
     ];
 
-    for (let i = 0; i < points.length; i++) {
-      points[i] = Transform.rotate(points[i], this.rotation);
-      points[i] = Transform.translate(points[i], this.x, this.y);
-    }
-
     return points;
   }
 
@@ -52,8 +48,8 @@ export class Rectangle extends Shape {
     context.lineWidth = this.borderSize;
 
     this.path = new Path2D();
-
-    let points = this.generatePoints();
+    
+    const points = Transform.applyTransformAround(this.points as Array<Vec2>, this.x, this.y, 1, 1, this.rotation, this.anchor);
     const start = points[0];
     this.path.moveTo(start.x, start.y);
 

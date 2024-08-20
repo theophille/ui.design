@@ -17,7 +17,7 @@ export abstract class Drawable {
   boundingBox!: BoundingBox;
   label!: string;
   path!: Path2D;
-  anchor: Vec2 = { x: 0.5, y: 0.5 };
+  anchor: Vec2 = { x: 0, y: 0 };
 
   protected points!: any;
 
@@ -38,15 +38,24 @@ export abstract class Drawable {
     this.boundingBox = this.getBoundingBoxCoords();
   }
 
-  public getBoundingBoxCoords(): BoundingBox {
-    let unitBoundingBox = [
-      { x: -this.anchor.x, y: 1 - this.anchor.y },
-      { x: 1 - this.anchor.x, y: 1 - this.anchor.y },
-      { x: 1 - this.anchor.x, y: 0 - this.anchor.y },
-      { x: -this.anchor.x, y: -this.anchor.y },
+  public getUnitBoundingBox(): Array<Vec2> {
+    const anchorPercent = {
+      x: this.anchor.x / this.width,
+      y: this.anchor.y / this.height
+    };
+
+    return [
+      { x: -0.5 - anchorPercent.x, y: 0.5 - anchorPercent.y },
+      { x: 0.5 - anchorPercent.x, y: 0.5 - anchorPercent.y },
+      { x: 0.5 - anchorPercent.x, y: -0.5 - anchorPercent.y },
+      { x: -0.5 - anchorPercent.x, y: -0.5 - anchorPercent.y },
     ];
+  }
+
+  public getBoundingBoxCoords(): BoundingBox {
+    let unitBoundingBox = this.getUnitBoundingBox();
+
     const p = Transform.applyTransform(unitBoundingBox, this.x, this.y, this.width, this.height, this.rotation);
-    
     let boundingBox = {
       minX: Infinity,
       minY: Infinity,
