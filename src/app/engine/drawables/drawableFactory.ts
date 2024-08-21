@@ -22,8 +22,8 @@ export class DrawableFactory {
     
     const w = Math.abs(endX - startX);
     const h = Math.abs(endY - startY);
-    const x = Math.round(startX + w / 2);
-    const y = Math.round(startY + h / 2);
+    const x = Math.round(startX);
+    const y = Math.round(startY);
 
     return this.createFromData(what, {
       x: x,

@@ -126,7 +126,7 @@ export class Transform {
   public static applyTransformAround(p: Array<Vec2>, x: number, y: number, w: number, h: number, r: number, pivot: Vec2): Array<Vec2> {
     let tp = Transform.scaleAround(p, pivot, w, h);
     tp = Transform.rotateAround(tp, pivot, r);
-    return tp.map((pt) => this.translate(pt, x - pivot.x, y - pivot.y));
+    return tp.map((pt) => this.translate(pt, x, y));
   }
 }
 

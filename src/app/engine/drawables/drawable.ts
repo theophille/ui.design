@@ -17,7 +17,7 @@ export abstract class Drawable {
   boundingBox!: BoundingBox;
   label!: string;
   path!: Path2D;
-  anchor: Vec2 = { x: 0, y: 0 };
+  anchor: Vec2 = { x: 0.5, y: 0.5 };
 
   protected points!: any;
 
@@ -45,6 +45,7 @@ export abstract class Drawable {
     };
   }
 
+
   public getUnitBoundingBox(): Array<Vec2> {
     const anchorPercent = {
       x: this.anchor.x / this.width,
@@ -52,10 +53,10 @@ export abstract class Drawable {
     };
 
     return [
-      { x: -0.5 - anchorPercent.x, y: 0.5 - anchorPercent.y },
-      { x: 0.5 - anchorPercent.x, y: 0.5 - anchorPercent.y },
-      { x: 0.5 - anchorPercent.x, y: -0.5 - anchorPercent.y },
-      { x: -0.5 - anchorPercent.x, y: -0.5 - anchorPercent.y },
+      { x: - this.anchor.x, y: - this.anchor.y },
+      { x: 1 - this.anchor.x, y: - this.anchor.y },
+      { x: 1 - this.anchor.x, y: 1 - this.anchor.y },
+      { x: - this.anchor.x, y: 1 - this.anchor.y },
     ];
   }
 

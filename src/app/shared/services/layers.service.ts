@@ -20,9 +20,9 @@ export class LayersService {
     }, 'hehehehe') as Drawable),
     (DrawableFactory.createFromBox(DRAWABLES.Rectangle, 100, 100, 200, 200) as Drawable),
     (DrawableFactory.createFromData(DRAWABLES.Polygon, {
-      x: 500, y: 500,
+      x: 100, y: 100,
       width: 100, height: 700,
-      rotation: 40, pointsCount: 6
+      rotation: 15, pointsCount: 6
     }) as Drawable),
     (DrawableFactory.createFromData(DRAWABLES.Line, {
       x: 800, y: 200,

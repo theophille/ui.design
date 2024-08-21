@@ -152,12 +152,13 @@ export class TransformService {
     for (let i = 0; i < selectedLayers.length; i++) {
       const drawable = layers[selectedLayers[i]];
       const ratio = drawable.width / drawable.height
-      const delta = ctrlSign[this.overControl as number].y * t * this.transDirection.y
-      drawable.setSize(
-        (drawable.height + delta) * ratio,
-        drawable.height + delta
-      );
+      const delta = {
+        x: drawable.width + ctrlSign[this.overControl as number].x * t * this.transDirection.x,
+        y: drawable.height + ctrlSign[this.overControl as number].y * t * this.transDirection.y
+      };
+      box.setTransform(delta.x, delta.y, {x: 0, y: 0});
     }
+
     
     
     box = this.layersService.transformBox as TransformBox;

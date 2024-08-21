@@ -14,9 +14,12 @@ export class Ellipse extends Shape {
     context.lineWidth = this.borderSize;
 
     this.path = new Path2D();
+
+    const x = this.x + this.anchor.x * this.width;
+    const y = this.y + this.anchor.y * this.height;
     this.path.ellipse(
-      Math.round(this.x),
-      Math.round(this.y),
+      Math.round(x),
+      Math.round(y),
       Math.round(this.width / 2),
       Math.round(this.height / 2),
       this.rotation,

@@ -49,7 +49,9 @@ export class Rectangle extends Shape {
 
     this.path = new Path2D();
     
-    const points = Transform.applyTransformAround(this.points as Array<Vec2>, this.x, this.y, 1, 1, this.rotation, this.anchor);
+    const x = this.x + this.anchor.x * this.width;
+    const y = this.y + this.anchor.y * this.height;
+    const points = Transform.applyTransformAround(this.points as Array<Vec2>, x, y, 1, 1, this.rotation, this.anchor);
     const start = points[0];
     this.path.moveTo(start.x, start.y);
 

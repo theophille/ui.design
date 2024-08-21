@@ -1,11 +1,8 @@
-import { radians, Transform, Vec2 } from "../utils/math.utils";
-import { BoundingBox, Drawable } from "./drawable";
+import { Transform, Vec2 } from "../utils/math.utils";
 import { Shape } from "./shape";
 
-export class Polygon extends Shape {
-  pointsCount: number = 3;
-
-  constructor(params: Partial<Polygon>) {
+export class SimpleRect extends Shape {
+  constructor(params: Partial<SimpleRect>) {
     super();
     Object.assign(this, params);
     this.points = this.generatePoints();
@@ -13,19 +10,12 @@ export class Polygon extends Shape {
   }
 
   private generatePoints(): Array<Vec2> {
-    const angle = 360 / this.pointsCount;
-    let points: Array<Vec2> = [];
-    
-    for (let i = 0; i < this.pointsCount; i++) {
-      let point: Vec2 = {
-        x: -Math.sin(radians(i * angle)) / 2,
-        y: -Math.cos(radians(i * angle)) / 2
-      };
-
-      points.push(point);
-    }
-
-    return points;
+    return [
+      { x: 0, y: 0 },
+      { x: 1, y: 0 },
+      { x: 1, y: 1 },
+      { x: 0, y: 1 }
+    ];
   }
 
   public override draw(context: CanvasRenderingContext2D): void {
@@ -36,9 +26,7 @@ export class Polygon extends Shape {
 
     this.path = new Path2D();
 
-    const x = this.x + this.anchor.x * this.width;
-    const y = this.y + this.anchor.y * this.height;
-    const points = Transform.applyTransform(this.points as Array<Vec2>, x, y, this.width, this.height, this.rotation);
+    const points = Transform.applyTransformAround(this.points as Array<Vec2>, this.x, this.y, this.width, this.height, this.rotation, this.anchor);
     this.path.moveTo(points[0].x, points[0].y);
     
     for (let i = 1; i < points.length; i++) {
