@@ -22,7 +22,7 @@ export class LayersService {
     (DrawableFactory.createFromData(DRAWABLES.Polygon, {
       x: 500, y: 500,
       width: 100, height: 700,
-      rotation: 15, pointsCount: 6
+      rotation: 40, pointsCount: 6
     }) as Drawable),
     (DrawableFactory.createFromData(DRAWABLES.Line, {
       x: 800, y: 200,

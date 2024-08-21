@@ -130,6 +130,15 @@ export class Transform {
   }
 }
 
+export function normalize(vector: Vec2): Vec2 {
+  const length = Math.sqrt(vector.x * vector.x + vector.y * vector.y);
+
+  return {
+    x: vector.x / length,
+    y: vector.y / length
+  };
+}
+
 export function radians(deg: number): number {
   return (deg * Math.PI) / 180;
 }

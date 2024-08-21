@@ -1,4 +1,4 @@
-import { Transform, Vec2 } from "../utils/math.utils";
+import { normalize, Transform, Vec2 } from "../utils/math.utils";
 import { BoundingBox, Drawable } from "./drawable";
 import { Ellipse } from "./ellipse";
 import { Rectangle } from "./rectangle";
@@ -11,6 +11,16 @@ export class TransformBox {
   rotation: number = 0;
   anchor!: Vec2;
   rotatedBox?: Array<Vec2>;
+  normals: Array<Vec2> = [
+    normalize({ x: -1, y: 1 }),
+    normalize({ x: 0, y: 1 }),
+    normalize({ x: 1, y: 1 }),
+    normalize({ x: 1, y: 0 }),
+    normalize({ x: 1, y: -1 }),
+    normalize({ x: 0, y: -1 }),
+    normalize({ x: -1, y: -1 }),
+    normalize({ x: -1, y: 0 })
+  ];
 
   private points!: Array<Vec2>;
 
@@ -54,8 +64,9 @@ export class TransformBox {
           this.y,
           this.width,
           this.height,
-          this.rotation,
+          this.rotation
         );
+        this.normals = Transform.rotateAround(this.normals, { x: 0, y: 0 }, this.rotation);
       }
     } else {
       this.width = points.maxX - points.minX;

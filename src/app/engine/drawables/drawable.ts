@@ -38,6 +38,13 @@ export abstract class Drawable {
     this.boundingBox = this.getBoundingBoxCoords();
   }
 
+  public getPosition(): Vec2 {
+    return {
+      x: this.x,
+      y: this.y
+    };
+  }
+
   public getUnitBoundingBox(): Array<Vec2> {
     const anchorPercent = {
       x: this.anchor.x / this.width,

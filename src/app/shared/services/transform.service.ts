@@ -5,21 +5,25 @@ import { KeyboardService } from '../../core/services/keyboard.service';
 import { KEYS } from '../../core/constants/constants';
 import { Drawable } from '../../engine/drawables/drawable';
 import { Vec2 } from '../../engine/utils/math.utils';
+import { TransformBox } from '../../engine/drawables/transformBox';
+import { ctrlSign } from '../../engine/constants/constants';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TransformService {
   isDragging: boolean = false;
+  isTransforming: boolean = false;
   dragOffset!: Vec2;
-  overControl: boolean = false;
+  overControl: number | null = null;
+  controlPosition!: Vec2;
+  transDirection!: Vec2;
 
   private layersService = inject(LayersService);
   private zoomAndPanService = inject(ZoomAndPanService);
   private keyboardService = inject(KeyboardService);
 
   private prevClick!: Vec2;
-  private currClick!: Vec2;
 
   private clickInsideDrawable(mouse: Vec2, drawable: Drawable, context: CanvasRenderingContext2D): boolean {
     return (context?.isPointInPath(drawable.path, mouse.x, mouse.y) as boolean) ||
@@ -66,20 +70,18 @@ export class TransformService {
     const controls = this.layersService.transformBox ? this.layersService.transformBox.controls : [];
 
     for (let i = 0; i < controls.length; i++) {
-
       if (context?.isPointInPath(controls[i].path, mouseX, mouseY)) {
         canvas.style.cursor = 'crosshair';
-        this.overControl = true;
+        this.overControl = i;
         return;
       }
     }
 
-    this.overControl = false;
+    this.overControl = null;
     canvas.style.cursor = 'default';
   }
 
   dragInit(mouseX: number, mouseY: number): void {
-    const box = this.layersService.transformBox;
     const offset = this.zoomAndPanService.getOffset();
     const scale = this.zoomAndPanService.getScale();
     const mouse = {
@@ -125,5 +127,49 @@ export class TransformService {
 
   dragEnd() {
     this.isDragging = false;
+  }
+
+  transformInit(mouseX: number, mouseY: number): void {
+    const box = this.layersService.transformBox as TransformBox;
+    this.transDirection = box.normals[this.overControl as number];
+    this.controlPosition = box.controls[this.overControl as number].getPosition();
+    this.isTransforming = true;
+  }
+  
+  transform(mouseX: number, mouseY: number): void {
+    let box = this.layersService.transformBox as TransformBox;
+    const selectedLayers = this.layersService.selectedLayers();
+    const layers = this.layersService.layers();
+    const offset = this.zoomAndPanService.getOffset();
+    const scale = this.zoomAndPanService.getScale();
+    const mouseVector = {
+      x: (mouseX - offset.x) / scale - (this.controlPosition.x - offset.x) / scale,
+      y: (mouseY - offset.y) / scale - (this.controlPosition.y - offset.y) / scale
+    };
+    
+    const t = mouseVector.x * this.transDirection.x + mouseVector.y * this.transDirection.y;
+    
+    for (let i = 0; i < selectedLayers.length; i++) {
+      const drawable = layers[selectedLayers[i]];
+      const ratio = drawable.width / drawable.height
+      const delta = ctrlSign[this.overControl as number].y * t * this.transDirection.y
+      drawable.setSize(
+        (drawable.height + delta) * ratio,
+        drawable.height + delta
+      );
+    }
+    
+    
+    box = this.layersService.transformBox as TransformBox;
+    this.layersService.setTransformBox();
+    this.transDirection = box.normals[this.overControl as number];
+    this.controlPosition = box.controls[this.overControl as number].getPosition();
+    this.layersService.requestRedraw.next();
+
+  }
+
+  endTransform(): void {
+    this.overControl = null;
+    this.isTransforming = false;
   }
 }

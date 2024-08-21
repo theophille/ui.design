@@ -33,6 +33,13 @@ export class DesignModeDirective {
   @HostListener('mousedown', ['$event'])
   onMouseDown(event: MouseEvent): void {
     if (event.button === 0) {
+      console.log(this.transformService.overControl);
+      if (this.transformService.overControl !== null) {
+        console.log('init transform');
+        this.transformService.transformInit(event.offsetX, event.offsetY);
+        return;
+      }
+
       this.transformService.onSelection(event.offsetX, event.offsetY, this.context as CanvasRenderingContext2D);
 
       if (this.layersService.transformBox?.isPointInside(this.context as CanvasRenderingContext2D, event.offsetX, event.offsetY)) {
@@ -43,19 +50,32 @@ export class DesignModeDirective {
 
   @HostListener('mousemove', ['$event'])
   onMouseMove(event: MouseEvent): void {
-    this.transformService.onHoverControlPoint(event.offsetX, event.offsetY, this.context as CanvasRenderingContext2D, this.canvas);
-  
-    if (this.transformService.overControl) {
-      console.log('dragging');
+    
+    if (this.transformService.isTransforming) {
+      console.log('transform');
+      this.transformService.transform(event.offsetX, event.offsetY);
+      return;
     }
 
+    this.transformService.onHoverControlPoint(event.offsetX, event.offsetY, this.context as CanvasRenderingContext2D, this.canvas);
+
     if (this.transformService.isDragging) {
+      console.log('dragging')
       this.transformService.drag(event.offsetX, event.offsetY);
     }
   }
 
   @HostListener('mouseup', ['$event'])
   onMouseUp(event: MouseEvent): void {
-    this.transformService.dragEnd();
+    if (this.transformService.isDragging) {
+      this.transformService.dragEnd();
+      return;
+    }
+
+    if (this.transformService.isTransforming) {
+      console.log('transform leave');
+      this.transformService.endTransform();
+      return;
+    }
   }
 }
