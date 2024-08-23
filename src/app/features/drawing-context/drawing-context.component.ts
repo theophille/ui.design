@@ -84,7 +84,7 @@ export class DrawingContextComponent implements OnInit, AfterViewInit {
     this.renderLayers();
     const box = this.layersService.transformBox;
 
-    if (box) {
+    if (!box.hidden) {
       box.draw(this.context as CanvasRenderingContext2D, this.zoomAndPanService.getOffset(), this.zoomAndPanService.getScale());
     }
 

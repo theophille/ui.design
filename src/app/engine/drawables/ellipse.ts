@@ -1,3 +1,4 @@
+import { radians } from "../utils/math.utils";
 import { Shape } from "./shape";
 
 export class Ellipse extends Shape {
@@ -17,16 +18,19 @@ export class Ellipse extends Shape {
 
     const x = this.x + this.anchor.x * this.width;
     const y = this.y + this.anchor.y * this.height;
+
     this.path.ellipse(
       Math.round(x),
       Math.round(y),
-      Math.round(this.width / 2),
-      Math.round(this.height / 2),
-      this.rotation,
+      Math.round(Math.abs(this.width / 2)),
+      Math.round(Math.abs(this.height / 2)),
+      radians(this.rotation),
       0, 2 * Math.PI,
       false
     );
-    this.path.closePath()
+
+    this.path.closePath();
+
     context.fill(this.path);
     context.stroke(this.path);
     context.restore();

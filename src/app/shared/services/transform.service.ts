@@ -4,9 +4,8 @@ import { ZoomAndPanService } from '../../features/drawing-context/zoom-and-pan.s
 import { KeyboardService } from '../../core/services/keyboard.service';
 import { KEYS } from '../../core/constants/constants';
 import { Drawable } from '../../engine/drawables/drawable';
-import { Vec2 } from '../../engine/utils/math.utils';
+import { Transform, Vec2 } from '../../engine/utils/math.utils';
 import { TransformBox } from '../../engine/drawables/transformBox';
-import { ctrlSign } from '../../engine/constants/constants';
 
 @Injectable({
   providedIn: 'root'
@@ -24,6 +23,7 @@ export class TransformService {
   private keyboardService = inject(KeyboardService);
 
   private prevClick!: Vec2;
+  private bounding!: Vec2;
 
   private clickInsideDrawable(mouse: Vec2, drawable: Drawable, context: CanvasRenderingContext2D): boolean {
     return (context?.isPointInPath(drawable.path, mouse.x, mouse.y) as boolean) ||
@@ -114,6 +114,7 @@ export class TransformService {
     for (let i = 0; i < selectedLayers.length; i++) {
       const drawable = layers[selectedLayers[i]];
       drawable.setTraslate(drawable.x + delta.x, drawable.y + delta.y);
+      // this.layersService.transformBox.setPosition(drawable.x, drawable.y);
     }
 
     this.layersService.setTransformBox();
@@ -134,6 +135,13 @@ export class TransformService {
     this.transDirection = box.normals[this.overControl as number];
     this.controlPosition = box.controls[this.overControl as number].getPosition();
     this.isTransforming = true;
+    const offset = this.zoomAndPanService.getOffset();
+    const scale = this.zoomAndPanService.getScale();
+    this.prevClick = {
+      x: (mouseX - offset.x) / scale,
+      y: (mouseY - offset.y) / scale
+    };
+    this.bounding = box.getTopLeft();
   }
   
   transform(mouseX: number, mouseY: number): void {
@@ -142,29 +150,64 @@ export class TransformService {
     const layers = this.layersService.layers();
     const offset = this.zoomAndPanService.getOffset();
     const scale = this.zoomAndPanService.getScale();
-    const mouseVector = {
-      x: (mouseX - offset.x) / scale - (this.controlPosition.x - offset.x) / scale,
-      y: (mouseY - offset.y) / scale - (this.controlPosition.y - offset.y) / scale
+    const control = this.overControl as number;
+    const mouse = {
+      x: (mouseX - offset.x) / scale,
+      y: (mouseY - offset.y) / scale
     };
-    
-    const t = mouseVector.x * this.transDirection.x + mouseVector.y * this.transDirection.y;
+    let d = {
+      x: mouse.x - this.prevClick.x,
+      y: mouse.y - this.prevClick.y
+    };
+
     
     for (let i = 0; i < selectedLayers.length; i++) {
       const drawable = layers[selectedLayers[i]];
-      const ratio = drawable.width / drawable.height
-      const delta = {
-        x: drawable.width + ctrlSign[this.overControl as number].x * t * this.transDirection.x,
-        y: drawable.height + ctrlSign[this.overControl as number].y * t * this.transDirection.y
-      };
-      box.setTransform(delta.x, delta.y, {x: 0, y: 0});
+      d = Transform.rotate(d, -drawable.rotation);
+
+      if (control === 3) {
+        drawable.setSize(drawable.width + d.x, drawable.height);
+      }
+
+      if (control === 7) {
+        drawable.setSize(drawable.width - d.x, drawable.height);
+        drawable.x += d.x;
+      }
+
+      if (control == 1) {
+        drawable.setSize(drawable.width, drawable.height + d.y);
+      }
+
+      if (control === 5) {
+        drawable.setSize(drawable.width, drawable.height - d.y);
+        drawable.y += d.y;
+      }
+
+      if (control === 6) {
+        drawable.setSize(drawable.width - d.x, drawable.height - d.y);
+        drawable.x += d.x;
+        drawable.y += d.y;
+      }
+      
+      if (control === 4) {
+        drawable.setSize(drawable.width + d.x, drawable.height - d.y);
+        drawable.y += d.y;
+      }
+      
+      if (control === 2) {
+        drawable.setSize(drawable.width + d.x, drawable.height + d.y);
+      }
+      
+      if (control === 0) {
+        drawable.setSize(drawable.width - d.x, drawable.height + d.y);
+        drawable.x += d.x;
+      }
+
+      drawable.boundingBox = drawable.getBoundingBoxCoords();
     }
 
-    
-    
-    box = this.layersService.transformBox as TransformBox;
+    this.prevClick = mouse;
     this.layersService.setTransformBox();
-    this.transDirection = box.normals[this.overControl as number];
-    this.controlPosition = box.controls[this.overControl as number].getPosition();
     this.layersService.requestRedraw.next();
 
   }

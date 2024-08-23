@@ -4,6 +4,7 @@ import { Shape } from "./shape";
 export class SimpleRect extends Shape {
   constructor(params: Partial<SimpleRect>) {
     super();
+    this.anchor = {x: 0, y: 0};
     Object.assign(this, params);
     this.points = this.generatePoints();
     this.boundingBox = this.getBoundingBoxCoords();
@@ -26,7 +27,9 @@ export class SimpleRect extends Shape {
 
     this.path = new Path2D();
 
-    const points = Transform.applyTransformAround(this.points as Array<Vec2>, this.x, this.y, this.width, this.height, this.rotation, this.anchor);
+    const x = this.x + this.anchor.x * this.width;
+    const y = this.y + this.anchor.y * this.height;
+    const points = Transform.applyTransformAround(this.points as Array<Vec2>, x, y, this.width, this.height, this.rotation, this.anchor);
     this.path.moveTo(points[0].x, points[0].y);
     
     for (let i = 1; i < points.length; i++) {

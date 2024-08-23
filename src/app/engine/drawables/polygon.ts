@@ -1,5 +1,4 @@
 import { radians, Transform, Vec2 } from "../utils/math.utils";
-import { BoundingBox, Drawable } from "./drawable";
 import { Shape } from "./shape";
 
 export class Polygon extends Shape {
@@ -45,7 +44,7 @@ export class Polygon extends Shape {
       const current = points[i];
       this.path.lineTo(current.x, current.y);
     }
-
+    
     this.path.closePath();
 
     context.fill(this.path);

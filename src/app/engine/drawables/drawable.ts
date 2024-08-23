@@ -30,7 +30,6 @@ export abstract class Drawable {
   public setSize(width: number, height: number): void {
     this.width = width;
     this.height = height;
-    this.boundingBox = this.getBoundingBoxCoords();
   }
   
   public setRotation(deg: number): void {
@@ -60,10 +59,18 @@ export abstract class Drawable {
     ];
   }
 
-  public getBoundingBoxCoords(): BoundingBox {
+  public getBoundingBoxCoords(rotation?: number): BoundingBox {
     let unitBoundingBox = this.getUnitBoundingBox();
 
-    const p = Transform.applyTransform(unitBoundingBox, this.x, this.y, this.width, this.height, this.rotation);
+    let p;
+    if (rotation !== undefined) {
+      p = Transform.applyTransform(unitBoundingBox, this.x + this.anchor.x * this.width, this.y + this.anchor.y * this.height, this.width, this.height, rotation);
+    } else {
+      p = Transform.applyTransform(unitBoundingBox, this.x + this.anchor.x * this.width, this.y + this.anchor.y * this.height, this.width, this.height, this.rotation);      
+    }
+
+    
+    
     let boundingBox = {
       minX: Infinity,
       minY: Infinity,

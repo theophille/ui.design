@@ -41,6 +41,18 @@ export class Rectangle extends Shape {
     return points;
   }
 
+  public override setTraslate(x: number, y: number): void {
+    this.x = x;
+    this.y = y;
+    this.points = this.generatePoints();
+  }
+
+  public override setSize(width: number, height: number): void {
+    this.width = width;
+    this.height = height;
+    this.points = this.generatePoints();
+  }
+
   public override draw(context: CanvasRenderingContext2D): void {
     context.save();
     context.fillStyle = this.fill;

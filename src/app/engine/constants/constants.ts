@@ -45,7 +45,8 @@ export const enum DRAWABLES {
   Line,
   CustomShape,
   Text,
-  Image
+  Image,
+  SimpleRect
 }
 
 export const ctrlSign: Array<Vec2> = [

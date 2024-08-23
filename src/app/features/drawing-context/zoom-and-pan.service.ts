@@ -1,6 +1,7 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { Vec2 } from '../../engine/utils/math.utils';
 import { Subject } from 'rxjs';
+import { LayersService } from '../../shared/services/layers.service';
 
 @Injectable({
   providedIn: 'root'

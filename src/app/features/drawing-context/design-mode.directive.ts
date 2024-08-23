@@ -33,9 +33,7 @@ export class DesignModeDirective {
   @HostListener('mousedown', ['$event'])
   onMouseDown(event: MouseEvent): void {
     if (event.button === 0) {
-      console.log(this.transformService.overControl);
       if (this.transformService.overControl !== null) {
-        console.log('init transform');
         this.transformService.transformInit(event.offsetX, event.offsetY);
         return;
       }
@@ -52,7 +50,6 @@ export class DesignModeDirective {
   onMouseMove(event: MouseEvent): void {
     
     if (this.transformService.isTransforming) {
-      console.log('transform');
       this.transformService.transform(event.offsetX, event.offsetY);
       return;
     }
@@ -60,7 +57,6 @@ export class DesignModeDirective {
     this.transformService.onHoverControlPoint(event.offsetX, event.offsetY, this.context as CanvasRenderingContext2D, this.canvas);
 
     if (this.transformService.isDragging) {
-      console.log('dragging')
       this.transformService.drag(event.offsetX, event.offsetY);
     }
   }
@@ -73,7 +69,6 @@ export class DesignModeDirective {
     }
 
     if (this.transformService.isTransforming) {
-      console.log('transform leave');
       this.transformService.endTransform();
       return;
     }
