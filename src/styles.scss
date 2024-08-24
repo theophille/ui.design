@@ -12,3 +12,21 @@ body {
   font-size: 14px;
 }
 
+h3 {
+  font-weight: 400;
+  color: $light-gray;
+  margin: 0;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: $light-gray;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: $main-theme-blue; 
+}
+

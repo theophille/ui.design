@@ -20,8 +20,14 @@ export class Line extends Drawable {
 
     this.path = new Path2D();
 
+    const [end] = Transform.rotateAround([{
+      x: this.x + this.width,
+      y: this.y + this.height
+    }], {x: this.x, y: this.y}, this.rotation);
+
+
     this.path.moveTo(this.x, this.y);
-    this.path.lineTo(this.x + this.width, this.y + this.height);
+    this.path.lineTo(end.x, end.y);
     context.stroke(this.path);
     context.restore();
   }

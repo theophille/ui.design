@@ -4,8 +4,9 @@ import { ZoomAndPanService } from '../../features/drawing-context/zoom-and-pan.s
 import { KeyboardService } from '../../core/services/keyboard.service';
 import { KEYS } from '../../core/constants/constants';
 import { Drawable } from '../../engine/drawables/drawable';
-import { Transform, Vec2 } from '../../engine/utils/math.utils';
+import { radians, Transform, Vec2 } from '../../engine/utils/math.utils';
 import { TransformBox } from '../../engine/drawables/transformBox';
+import { Subject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -17,6 +18,8 @@ export class TransformService {
   overControl: number | null = null;
   controlPosition!: Vec2;
   transDirection!: Vec2;
+
+  dragging = new Subject<void>();
 
   private layersService = inject(LayersService);
   private zoomAndPanService = inject(ZoomAndPanService);
@@ -114,9 +117,9 @@ export class TransformService {
     for (let i = 0; i < selectedLayers.length; i++) {
       const drawable = layers[selectedLayers[i]];
       drawable.setTraslate(drawable.x + delta.x, drawable.y + delta.y);
-      // this.layersService.transformBox.setPosition(drawable.x, drawable.y);
     }
 
+    this.dragging.next();
     this.layersService.setTransformBox();
     this.layersService.requestRedraw.next();
 
@@ -151,19 +154,17 @@ export class TransformService {
     const offset = this.zoomAndPanService.getOffset();
     const scale = this.zoomAndPanService.getScale();
     const control = this.overControl as number;
+    const dir = box.normals[control];
+    
     const mouse = {
       x: (mouseX - offset.x) / scale,
       y: (mouseY - offset.y) / scale
     };
-    let d = {
-      x: mouse.x - this.prevClick.x,
-      y: mouse.y - this.prevClick.y
-    };
 
+    let d = this.getDelta(mouse);
     
     for (let i = 0; i < selectedLayers.length; i++) {
       const drawable = layers[selectedLayers[i]];
-      d = Transform.rotate(d, -drawable.rotation);
 
       if (control === 3) {
         drawable.setSize(drawable.width + d.x, drawable.height);
@@ -171,7 +172,6 @@ export class TransformService {
 
       if (control === 7) {
         drawable.setSize(drawable.width - d.x, drawable.height);
-        drawable.x += d.x;
       }
 
       if (control == 1) {
@@ -180,18 +180,14 @@ export class TransformService {
 
       if (control === 5) {
         drawable.setSize(drawable.width, drawable.height - d.y);
-        drawable.y += d.y;
       }
-
+      
       if (control === 6) {
         drawable.setSize(drawable.width - d.x, drawable.height - d.y);
-        drawable.x += d.x;
-        drawable.y += d.y;
       }
       
       if (control === 4) {
         drawable.setSize(drawable.width + d.x, drawable.height - d.y);
-        drawable.y += d.y;
       }
       
       if (control === 2) {
@@ -200,8 +196,19 @@ export class TransformService {
       
       if (control === 0) {
         drawable.setSize(drawable.width - d.x, drawable.height + d.y);
+      }
+
+      // const angle = Math.acos(d.x / Math.sqrt(d.x * d.x + d.y * d.y));
+
+      if (dir.x < 0) {
         drawable.x += d.x;
       }
+
+      if (dir.y < 0) {
+        drawable.y += d.y;
+      }
+
+      this.dragging.next();
 
       drawable.boundingBox = drawable.getBoundingBoxCoords();
     }
@@ -215,5 +222,34 @@ export class TransformService {
   endTransform(): void {
     this.overControl = null;
     this.isTransforming = false;
+  }
+
+  private getDelta(mouse: Vec2): Vec2 {
+    const box = this.layersService.transformBox as TransformBox;
+    const control = this.overControl as number;
+    const dir = box.normals[control];
+    const offset = this.zoomAndPanService.getOffset();
+    const scale = this.zoomAndPanService.getScale();
+
+    let point, mouseDelta: Vec2, t;
+
+    point = {
+      x: (box.controls[control].x - offset.x) / scale,
+      y: (box.controls[control].y - offset.y) / scale
+    };
+
+    mouseDelta = {
+      x: mouse.x - point.x,
+      y: mouse.y - point.y
+    };
+
+    t = mouseDelta.x * dir.x + mouseDelta.y * dir.y;
+
+    let d = {
+      x: t * dir.x,
+      y: t * dir.y
+    };
+
+    return d;
   }
 }

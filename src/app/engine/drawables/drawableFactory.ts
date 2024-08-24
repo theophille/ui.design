@@ -1,4 +1,4 @@
-import { DRAWABLES, DRAWABLES_LABELS } from "../constants/constants";
+import { DRAWABLES, DRAWABLES_LABELS, TOOL_TYPES, TOOLS } from "../constants/constants";
 import { CustomShape } from "./customShape";
 import { Drawable } from "./drawable";
 import { Ellipse } from "./ellipse";
@@ -17,11 +17,11 @@ export class DrawableFactory {
     image: 0
   }
 
-  public static createFromBox(what: number, startX: number, startY: number,
+  public static createFromBox(what: string, startX: number, startY: number,
     endX: number, endY: number): Drawable | null {
     
-    const w = Math.abs(endX - startX);
-    const h = Math.abs(endY - startY);
+    const w = endX - startX;
+    const h = endY - startY;
     const x = Math.round(startX);
     const y = Math.round(startY);
 
@@ -34,36 +34,36 @@ export class DrawableFactory {
     });
   }
 
-  public static createFromData(what: number, data: any, label?: string): Drawable | null {
-    if (what === DRAWABLES.Rectangle) {
+  public static createFromData(what: string, data: any, label?: string): Drawable | null {
+    if (what === TOOL_TYPES.rectangle) {
       const id = this.count.rectangle++;
       const l = label ? label : `${DRAWABLES_LABELS.rectangle} ${id}`;
       let rectangle = new Rectangle({ ...data, label: l });
       return rectangle;
     }
 
-    if (what == DRAWABLES.Ellipse) {
+    if (what == TOOL_TYPES.ellipse) {
       const id = this.count.ellipse++;
       const l = label ? label : `${DRAWABLES_LABELS.ellipse} ${id}`;
       let ellipse = new Ellipse({ ...data, label: l });
       return ellipse;
     }
 
-    if (what == DRAWABLES.Polygon) {
+    if (what == TOOL_TYPES.polygon) {
       const id = this.count.polygon++;
       const l = label ? label : `${DRAWABLES_LABELS.polygon} ${id}`;
       let polygon = new Polygon({ ...data, label: l });
       return polygon;
     }
 
-    if (what == DRAWABLES.Line) {
+    if (what == TOOL_TYPES.line) {
       const id = this.count.line++;
       const l = label ? label : `${DRAWABLES_LABELS.line} ${id}`;
       let line = new Line({ ...data, label: l });
       return line;
     }
 
-    if (what == DRAWABLES.CustomShape) {
+    if (what == TOOL_TYPES.pen) {
       const id = this.count.customShape++;
       const l = label ? label : `${DRAWABLES_LABELS.customShape} ${id}`;
       let customShape = new CustomShape({ ...data, label: l });

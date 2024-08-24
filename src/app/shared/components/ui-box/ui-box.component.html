@@ -1,4 +1,4 @@
-<div class="box-container" [ngStyle]="{'height': 'calc(' + height + '%' + ' - 2.5px' + ')'}">
+<div class="box-container" [ngStyle]="{'height': calculateHeight(height)}" style="overflow: auto;">
   <div class="box-header">
     <div class="box-label">
       @if (headerIcon) {
@@ -10,7 +10,7 @@
       <img src="assets/icons/plus.png" alt="blank-page" width="14px">
     }
   </div>
-  <div class="box-content">
+  <div class="box-content" >
     <ng-content></ng-content>
   </div>
 </div>

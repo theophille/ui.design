@@ -7,6 +7,9 @@ import { UIPage } from '../pages-box/page.model';
 import { Layers, LayersService } from '../../shared/services/layers.service';
 import { DesignModeDirective } from './design-mode.directive';
 import { Drawable } from '../../engine/drawables/drawable';
+import { ToolsService } from '../tools/tools.service';
+import { Tool } from '../tools/tool.model';
+import { CreateService } from '../tools/create.service';
 
 @Component({
   selector: 'uid-drawing-context',
@@ -21,11 +24,14 @@ export class DrawingContextComponent implements OnInit, AfterViewInit {
   private context!: CanvasRenderingContext2D | null;
   private pageData!: UIPage;
   private layers!: WritableSignal<Layers>;
+  private tool!: Tool;
+  private cursor: string = 'default';
 
   private zoomAndPanService = inject(ZoomAndPanService);
   private sizesService = inject(SizesService);
   private pagesService = inject(PagesBoxService);
   private layersService = inject(LayersService);
+  private createService = inject(CreateService);
 
   ngOnInit(): void {
     this.context?.save();
@@ -54,6 +60,8 @@ export class DrawingContextComponent implements OnInit, AfterViewInit {
     this.layersService.requestRedraw.subscribe(() => {
       this.draw();
     });
+
+
   }
   
   ngAfterViewInit(): void {
@@ -88,6 +96,10 @@ export class DrawingContextComponent implements OnInit, AfterViewInit {
       box.draw(this.context as CanvasRenderingContext2D, this.zoomAndPanService.getOffset(), this.zoomAndPanService.getScale());
     }
 
+    if (this.createService.isCreating) {
+      this.createService.boundingRect.draw(this.context as CanvasRenderingContext2D);
+    }
+
     this.context?.restore();
   }
   
@@ -116,6 +128,14 @@ export class DrawingContextComponent implements OnInit, AfterViewInit {
 
     return scale;
   }
+
+  private changeCursor(tool: Tool) {
+    if (tool.label === 'square') {
+      this.cursor = 'crosshair';
+    }
+  }
+
+  
 
   @HostListener('window:resize')
   onResize(): void {

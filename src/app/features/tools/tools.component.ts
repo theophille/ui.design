@@ -1,7 +1,8 @@
-import { Component, OnInit, signal, WritableSignal } from '@angular/core';
+import { Component, inject, OnInit, signal, WritableSignal } from '@angular/core';
 import { ToolsService } from './tools.service';
 import { Tool } from './tool.model';
 import { CommonModule } from '@angular/common';
+import { LayersService } from '../../shared/services/layers.service';
 
 @Component({
   selector: 'uid-tools',
@@ -13,6 +14,7 @@ import { CommonModule } from '@angular/common';
 export class ToolsComponent implements OnInit {
   tools: WritableSignal<Array<Tool>> = signal([]);
   activeTool!: WritableSignal<number>;
+  layersService = inject(LayersService);
 
   constructor(private toolsService: ToolsService) {}
 
@@ -23,5 +25,6 @@ export class ToolsComponent implements OnInit {
 
   onToolClick(toolIndex: any): void {
     this.activeTool.set(toolIndex);
+    this.layersService.selectedTool.next(this.tools()[this.activeTool()]);
   }
 }

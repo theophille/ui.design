@@ -14,4 +14,8 @@ export class UiBoxComponent {
   @Input() headerIcon: string = '';
   @Input() actions: boolean = false;
   @Input() height: number = 50;
+
+  calculateHeight(height: number): string {
+    return `calc(${height}% - 2.5px)`;
+  }
 }

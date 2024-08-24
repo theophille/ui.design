@@ -31,6 +31,7 @@ export class AppComponent implements AfterViewInit {
 
   @HostListener('window:keydown', ['$event'])
   onKeyDown(event: KeyboardEvent): void {
+    this.keyboardService.keyDown.next(event.key);
     if (!this.keyboardService.keysPressed.includes(event.key)) {
       this.keyboardService.addKey(event.key);
     }

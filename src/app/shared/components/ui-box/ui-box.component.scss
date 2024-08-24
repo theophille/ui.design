@@ -4,6 +4,7 @@
   width: $box-width;
   background-color: $mid-gray;
   margin-top: $box-gap;
+  position: relative;
 }
 
 .box-header {
@@ -11,6 +12,8 @@
   height: 40px;
   background-color: $label-gray;
   padding: 0 20px;
+  position: sticky;
+  top: 0;
 }
 
 .box-label {

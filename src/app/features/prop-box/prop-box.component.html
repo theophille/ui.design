@@ -1,4 +1,70 @@
 <uid-ui-box headerIcon="assets/icons/blank-page.png"
   headerLabel="TRANSFORM"
   [actions]="true"
-  [height]="height"></uid-ui-box>
+  [height]="height">
+  @if (active()) {
+    <form [formGroup]="props">
+      <div class="container" formGroupName="transform">
+        <h3 class="section-name">TRANSFORM</h3>
+
+        <div class="field-container" >
+          <div class="label">Position</div>
+          <div class="field">
+            <span> X </span>
+            <input
+              class="text"
+              type="text"
+              formControlName="x"
+              (blur)="updateData('x')"
+              (keyup.enter)="updateData('x')">
+          </div>
+          <div class="field">
+            <span> Y </span>
+            <input
+              class="text"
+              type="text"
+              formControlName="y"
+              (blur)="updateData('y')"
+              (keyup.enter)="updateData('y')">
+          </div>
+        </div>
+
+        <div class="field-container">
+          <div class="label">Size</div>
+          <div class="field">
+            <span> W </span>
+            <input
+              class="text"
+              type="text"
+              formControlName="width"
+              (blur)="updateData('width')"
+              (keyup.enter)="updateData('width')">
+          </div>
+          <div class="field">
+            <span> H </span>
+            <input
+              class="text"
+              type="text"
+              formControlName="height"
+              (blur)="updateData('height')"
+              (keyup.enter)="updateData('height')">
+          </div>
+        </div>
+
+        <div class="field-container">
+          <div class="label">Rotation</div>
+          <div class="field">
+            <span> R </span>
+            <input
+              class="text"
+              type="text"
+              formControlName="rotation"
+              (blur)="updateData('rotation')"
+              (keyup.enter)="updateData('rotation')">
+          </div>
+        </div>
+      </div>
+    </form>
+  }
+
+</uid-ui-box>

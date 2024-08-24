@@ -3,11 +3,13 @@ import { UiBoxComponent } from '../../shared/components/ui-box/ui-box.component'
 import { Layers, LayersService } from '../../shared/services/layers.service';
 import { Shape } from '../../engine/drawables/shape';
 import { BoxListItemComponent } from '../../shared/components/ui-box/box-list-item/box-list-item.component';
-import { Icons, TOOL_ICONS } from '../../engine/constants/constants';
+import { Icons, TOOL_ICONS, TOOLS } from '../../engine/constants/constants';
 import { Drawable } from '../../engine/drawables/drawable';
 import { Polygon } from '../../engine/drawables/polygon';
 import { KeyboardService } from '../../core/services/keyboard.service';
 import { KEYS } from '../../core/constants/constants';
+import { Tool } from '../tools/tool.model';
+import { TransformService } from '../../shared/services/transform.service';
 
 @Component({
   selector: 'uid-layers',
@@ -21,6 +23,7 @@ export class LayersComponent implements OnInit {
   layers!: WritableSignal<Layers>;
   layersListData: any[] = [];
   selectedLayers!: WritableSignal<Array<number>>;
+  tool!: Tool;
   
   private layersService = inject(LayersService);
   private keyboardService = inject(KeyboardService);
@@ -49,10 +52,38 @@ export class LayersComponent implements OnInit {
     });
 
     this.layersService.layersLoaded.next();
+
+    this.layersService.selectedTool.subscribe((tool: Tool) => {
+      this.tool = tool;
+    });
+
+    this.layersService.addedDrawable.subscribe((drawable: Drawable) => {
+      const className = (drawable.constructor.name.toLowerCase() as Icons);
+      const icons = TOOL_ICONS;
+      this.layers.set([...this.layers(), drawable]);
+      this.layersListData.push({
+        icon: icons[className],
+        label: drawable.label
+      });
+    });
+
+    this.keyboardService.keyDown.subscribe((key: string) => {
+      const selectedLayers = this.selectedLayers();
+      if (key === 'Delete' && selectedLayers.length > 0) {
+        const layers = this.layers();
+        let modified = layers.filter((d, i) => !selectedLayers.includes(i));
+        this.layers.set(modified);
+        this.layersListData = this.layersListData.filter((d, i) => !selectedLayers.includes(i));
+        this.selectedLayers.set([]);
+        this.layersService.setTransformBox();
+        this.layersService.requestRedraw.next();
+      }
+    });
   }
 
   public onClick(layerIndex: number): void {
     this.handleSelection(layerIndex, KEYS.control);
+    this.layersService.layerClicked.next(layerIndex);
   }
   
   private handleSelection(layerIndex: number | null, key: string) {

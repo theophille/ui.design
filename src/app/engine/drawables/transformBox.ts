@@ -11,16 +11,7 @@ export class TransformBox {
   height!: number;
   rotation: number = 0;
   anchor!: Vec2;
-  normals: Array<Vec2> = [
-    normalize({ x: -1, y: 1 }),
-    normalize({ x: 0, y: 1 }),
-    normalize({ x: 1, y: 1 }),
-    normalize({ x: 1, y: 0 }),
-    normalize({ x: 1, y: -1 }),
-    normalize({ x: 0, y: -1 }),
-    normalize({ x: -1, y: -1 }),
-    normalize({ x: -1, y: 0 })
-  ];
+  normals!: Array<Vec2>;
   selected!: Array<Drawable>;
   hidden: boolean = true;
 
@@ -28,6 +19,19 @@ export class TransformBox {
 
   public rectangle: SimpleRect | null = null;
   public controls: Array<Ellipse> = [];
+
+  private setNormals(): void {
+    this.normals = [
+      normalize({ x: -1, y: 1 }),
+      normalize({ x: 0, y: 1 }),
+      normalize({ x: 1, y: 1 }),
+      normalize({ x: 1, y: 0 }),
+      normalize({ x: 1, y: -1 }),
+      normalize({ x: 0, y: -1 }),
+      normalize({ x: -1, y: -1 }),
+      normalize({ x: -1, y: 0 })
+    ];
+  }
 
   private setPoints(rotation: number): void {
     this.points = [
@@ -53,12 +57,17 @@ export class TransformBox {
     );
   }
 
-  public setSelected(selection: Array<Drawable>, offset: Vec2, scale: number) {
+  public setSelected(selection: Array<Drawable>, rotOccured?: boolean) {
     this.selected = selection;
-    this.set(offset, scale);
+
+    if (rotOccured || !this.normals) {
+      this.setNormals();
+    }
+
+    this.set(rotOccured);
   }
 
-  private set(offset: Vec2, scale: number): void {
+  private set(rotOccured?: boolean): void {
     if (this.selected.length == 0) {
       this.hidden = true;
       this.rectangle = null;
@@ -76,22 +85,24 @@ export class TransformBox {
       this.rotation = drawable.rotation;
       this.anchor = drawable.anchor;
       this.setPoints(this.rotation);
-      this.normals = Transform.rotateAround(
-        this.normals,
-        { x: 0, y: 0 },
-        this.rotation
-      );
     }
 
     if (this.selected.length > 1) {
       const boundingBox = this.getBundleBoundingBox(this.selected);
-      console.log(boundingBox);
       this.width = boundingBox.maxX - boundingBox.minX;
       this.height = boundingBox.maxY - boundingBox.minY;
       this.x = Math.round(boundingBox.minX);
       this.y = Math.round(boundingBox.minY);
       this.anchor = {x: 0, y: 0};
       this.setPoints(0);
+    }
+
+    if (rotOccured) {
+      this.normals = Transform.rotateAround(
+        this.normals,
+        { x: 0, y: 0 },
+        this.rotation
+      );
     }
   }
   

@@ -15,6 +15,21 @@ export const TOOLS = [
   { tool: 'zoom', label: 'Zoom Tool', icon: 'assets/icons/tools/zoom.png' }
 ];
 
+export const TOOL_TYPES = {
+  select: 'select',
+  rectangle: 'rectangle',
+  ellipse: 'ellipse',
+  polygon: 'polygon',
+  line: 'line',
+  pen: 'pen',
+  text: 'text',
+  zoom: 'zoom'
+};
+
+export const CREATE_TOOLS = [
+  'rectangle', 'ellipse', 'polygon', 'line', 'pen', 'text', 'zoom'
+];
+
 export const TOOL_ICONS = {
   select: 'assets/icons/tools/select.png',
   rectangle: 'assets/icons/tools/square.png',
