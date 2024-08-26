@@ -4,6 +4,7 @@ import { LayersService } from '../../shared/services/layers.service';
 import { Drawable } from '../../engine/drawables/drawable';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TransformService } from '../../shared/services/transform.service';
+import { Shape } from '../../engine/drawables/shape';
 
 @Component({
   selector: 'uid-prop-box',
@@ -26,7 +27,15 @@ export class PropBoxComponent implements OnInit {
       y: new FormControl(''),
       width: new FormControl(''),
       height: new FormControl(''),
-      rotation: new FormControl('')
+      rotation: new FormControl(''),
+      
+    }),
+    aspect: new FormGroup({
+      fill: new FormControl(''),
+      borderColor: new FormControl(''),
+      borderSize: new FormControl(''),
+      color: new FormControl(''),
+      lineWidth: new FormControl('')
     })
   });
   
@@ -47,19 +56,27 @@ export class PropBoxComponent implements OnInit {
 
   private fillForm(index?: number | null): void {
     let drawable: any;
-
+    
     if (index !== null && index !== undefined) {
       drawable = this.layersService.layers()[index];
     } else {
       drawable = this.selectedLayer();
     }
-
+    
     const transform = this.props.controls.transform.controls;
+    
+    for (const key in transform) {
+      const k = key as keyof typeof transform;
+      transform[k].setValue(Math.round(drawable[k]).toString());
+    }
+    
+    const aspect = this.props.controls.aspect.controls;
+    for (const key in aspect) {
+      const k = key as keyof typeof aspect;
+      aspect[k].setValue(drawable[k]);
+    }
     this.selectedLayer.set(drawable);
 
-    for (const key in transform) {
-      transform[key as keyof typeof transform].setValue(Math.round(drawable[key as keyof typeof transform]).toString());
-    }
   }
 
   updateData(key: string): void {
@@ -68,9 +85,29 @@ export class PropBoxComponent implements OnInit {
     const value = transform[k].value;
     const sl = this.selectedLayer();
     if (sl) {
-      sl[k] = Number(value);
+        sl[k] = Number(value);
     }
     this.layersService.setTransformBox();
     this.layersService.requestRedraw.next();
+  }
+  
+  updateAspect(key: string): void {
+    const aspect = this.props.controls.aspect.controls;
+    const k = key as keyof typeof aspect;
+    const value: any = aspect[k].value;
+    const sl = this.selectedLayer() as Shape;
+    if (sl) {
+      (sl as any)[k] = (k === 'borderSize' || k === 'lineWidth') ? Number(value) : value;
+    }
+    this.layersService.setTransformBox();
+    this.layersService.requestRedraw.next();
+  }
+
+  getInstance() {
+    if (this.selectedLayer()) {
+      return this.selectedLayer()?.constructor.name.toLowerCase();
+    } else {
+      return null;
+    }
   }
 }

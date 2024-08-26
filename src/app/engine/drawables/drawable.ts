@@ -1,5 +1,4 @@
 import { Transform, Vec2 } from "../utils/math.utils";
-import { PenPoint } from "./customShape";
 
 export interface BoundingBox {
   minX: number,

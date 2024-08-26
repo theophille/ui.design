@@ -5,6 +5,7 @@ import { Ellipse } from "./ellipse";
 import { Line } from "./line";
 import { Polygon } from "./polygon";
 import { Rectangle } from "./rectangle";
+import { Text } from "./text";
 
 export class DrawableFactory {
   private static count = {
@@ -68,6 +69,13 @@ export class DrawableFactory {
       const l = label ? label : `${DRAWABLES_LABELS.customShape} ${id}`;
       let customShape = new CustomShape({ ...data, label: l });
       return customShape;
+    }
+    
+    if (what === TOOL_TYPES.text) {
+      const id = this.count.text++;
+      const l = label ? label : `${DRAWABLES_LABELS.text} ${id}`;
+      let text = new Text({ ...data, label: l });
+      return text;
     }
 
     return null;

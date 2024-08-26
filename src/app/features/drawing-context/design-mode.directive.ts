@@ -50,8 +50,6 @@ export class DesignModeDirective implements OnInit {
         this.layersService.layerClicked.next(null);
       }
 
-      console.log(this.cursor);
-
       this.canvas.style.cursor = this.cursor;
     })
   }
@@ -63,7 +61,6 @@ export class DesignModeDirective implements OnInit {
       x: (event.offsetX - offset.x) / scale,
       y: (event.offsetY - offset.y) / scale
     };
-    console.log(mouse);
   }
 
   @HostListener('mousedown', ['$event'])

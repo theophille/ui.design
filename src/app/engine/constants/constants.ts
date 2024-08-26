@@ -1,7 +1,7 @@
 import { Vec2 } from "../utils/math.utils";
 
-export const FILL_DEFAULT: string = '#51a2ff';
-export const BORDER_DEFAULT: string = '#0077ee';
+export const FILL_DEFAULT: string = '#51A2FF';
+export const BORDER_DEFAULT: string = '#0077EE';
 export const STROKE_SIZE_DEFAULT: number = 3;
 
 export const TOOLS = [

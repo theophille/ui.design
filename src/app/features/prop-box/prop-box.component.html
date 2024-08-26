@@ -64,6 +64,74 @@
           </div>
         </div>
       </div>
+
+      <div class="line"></div>
+
+      <div class="container" formGroupName="aspect">
+        <h3 class="section-name">ASPECT</h3>
+
+        @if (getInstance() !== 'line') {
+          <div class="field-container">
+            <div class="label">Fill</div>
+            <div class="field">
+              <input
+                type="color"
+                class="color"
+                formControlName="fill"
+                (change)="updateAspect('fill')">
+            </div>
+            <button class="button"><img src="assets/icons/visibility.png" alt="eye" width="14"></button>
+          </div>
+          
+          <div class="field-container">
+            <div class="label">Border</div>
+            <div class="field">
+              <input
+              type="color"
+              class="color"
+              formControlName="borderColor"
+              (change)="updateAspect('borderColor')">
+            </div>
+            <button class="button"><img src="assets/icons/visibility.png" alt="eye" width="14"></button>
+          </div>
+  
+          <div class="field-container">
+            <div class="field">
+              <span> Border Size: </span>
+              <input
+                class="text"
+                type="text"
+                formControlName="borderSize"
+                (blur)="updateAspect('borderSize')"
+                (keyup.enter)="updateAspect('borderSize')">
+            </div>
+          </div>
+        } @else {
+          <div class="field-container">
+            <div class="label">Color</div>
+            <div class="field">
+              <input
+                type="color"
+                class="color"
+                formControlName="color"
+                (change)="updateAspect('color')">
+            </div>
+            <button class="button"><img src="assets/icons/visibility.png" alt="eye" width="14"></button>
+          </div>
+
+          <div class="field-container">
+            <div class="field">
+              <span> Stroke Size: </span>
+              <input
+                class="text"
+                type="text"
+                formControlName="lineWidth"
+                (blur)="updateAspect('lineWidth')"
+                (keyup.enter)="updateAspect('lineWidth')">
+            </div>
+          </div>
+        }
+      </div>
     </form>
   }
 

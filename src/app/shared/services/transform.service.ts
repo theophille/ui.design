@@ -29,8 +29,12 @@ export class TransformService {
   private bounding!: Vec2;
 
   private clickInsideDrawable(mouse: Vec2, drawable: Drawable, context: CanvasRenderingContext2D): boolean {
-    return (context?.isPointInPath(drawable.path, mouse.x, mouse.y) as boolean) ||
-      (context?.isPointInStroke(drawable.path, mouse.x, mouse.y) as boolean);
+    if (drawable.constructor.name.toLowerCase() !== 'text'){
+      return (context?.isPointInPath(drawable.path, mouse.x, mouse.y) as boolean) ||
+        (context?.isPointInStroke(drawable.path, mouse.x, mouse.y) as boolean);
+    }
+
+    return false;
   }
 
   onSelection(mouseX: number, mouseY: number, context: CanvasRenderingContext2D): void {
@@ -162,11 +166,13 @@ export class TransformService {
     };
 
     let d = this.getDelta(mouse);
+    let length = Math.sqrt(d.x * d.x + d.y * d.y);
     
     for (let i = 0; i < selectedLayers.length; i++) {
       const drawable = layers[selectedLayers[i]];
 
       if (control === 3) {
+        const sign = d.x < 0 ? -1 : 1;
         drawable.setSize(drawable.width + d.x, drawable.height);
       }
 
@@ -203,10 +209,14 @@ export class TransformService {
       if (dir.x < 0) {
         drawable.x += d.x;
       }
-
+      
       if (dir.y < 0) {
         drawable.y += d.y;
       }
+
+      console.log(control);
+      console.log('drawable', drawable.x, drawable.y);
+      console.log('drawable.r', drawable.rotation);
 
       this.dragging.next();
 
